@@ -1,27 +1,9 @@
 from contextlib import contextmanager
-from multiprocessing.sharedctypes import Value
-from . import azure
+
+from manim_speech.speech_synthesizer import SpeechSynthesizer
 import os
 from manim import Scene
 from manim_speech.modify_audio import get_duration
-
-
-class SpeechSynthesizer:
-    def __init__(self, tts_config, output_dir="media/tts"):
-        self.tts_config = tts_config
-        self.output_dir = output_dir
-
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-
-    def synthesize_from_text(self, text, path=None):
-        if "\n" in text:
-            text = text.replace("\n", " ")
-
-        if isinstance(self.tts_config, azure.AzureTTSConfig):
-            return azure.azure_synthesize_text(
-                text, self.tts_config, self.output_dir, path=path
-            )
 
 
 class VoiceoverTracker:
@@ -44,8 +26,8 @@ class VoiceoverTracker:
 
 
 class VoiceoverScene(Scene):
-    def init_voiceover(self, config):
-        self.speech_synthesizer = SpeechSynthesizer(config)
+    def init_voiceover(self, speech_synthesizer: SpeechSynthesizer):
+        self.speech_synthesizer = speech_synthesizer
         self.current_tracker = None
 
     def add_voiceover_text(self, text: str):
@@ -59,10 +41,14 @@ class VoiceoverScene(Scene):
         raise NotImplementedError("SSML input not implemented yet.")
 
     def wait_for_voiceover(self):
+        if not hasattr(self, "current_tracker"):
+            return
+        if self.current_tracker is None:
+            return
+
         remaining_duration = self.current_tracker.get_remaining_duration()
         if remaining_duration != 0:
             self.wait(remaining_duration)
-
 
     @contextmanager
     def voiceover(self, text=None, ssml=None):
@@ -76,4 +62,3 @@ class VoiceoverScene(Scene):
                 yield self.add_voiceover_ssml(ssml)
         finally:
             self.wait_for_voiceover()
-

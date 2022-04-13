@@ -1,7 +1,9 @@
 from manim import *
 import pygments.styles as code_styles
 from manim_speech import VoiceoverScene
-from manim_speech.azure import AzureTTSConfig
+from manim_speech.azure_interface import AzureTTS
+from manim_speech.pyttsx3_interface import PyTTSX3
+import pyttsx3
 
 code_style = code_styles.get_style_by_name("monokai")
 
@@ -10,10 +12,12 @@ class VoiceoverDemo(VoiceoverScene):
     def construct(self):
         # Initialize speech synthesis using Azure's TTS API
         self.init_voiceover(
-            AzureTTSConfig(
+            AzureTTS(
                 voice="en-US-AriaNeural", style="newscast-casual", global_speed=1.15
             )
         )
+        # self.init_voiceover(PyTTSX3(pyttsx3.init(), global_speed=1.15))
+
         # self.init_voiceover(AzureTTSConfig(voice="en-US-GuyNeural", style="newscast", global_speed=1.15))
         # self.init_voiceover(AzureTTSConfig(voice="en-US-BrandonNeural", global_speed=1.15))
 
