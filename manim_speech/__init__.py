@@ -1,3 +1,5 @@
+from contextlib import contextmanager
+from multiprocessing.sharedctypes import Value
 from . import azure
 import os
 from manim import Scene
@@ -53,7 +55,25 @@ class VoiceoverScene(Scene):
         self.current_tracker = tracker
         return tracker
 
+    def add_voiceover_ssml(self, ssml: str):
+        raise NotImplementedError("SSML input not implemented yet.")
+
     def wait_for_voiceover(self):
         remaining_duration = self.current_tracker.get_remaining_duration()
         if remaining_duration != 0:
             self.wait(remaining_duration)
+
+
+    @contextmanager
+    def voiceover(self, text=None, ssml=None):
+        if text is None and ssml is None:
+            raise ValueError("Please specify either a voiceover text or SSML string.")
+
+        try:
+            if text is not None:
+                yield self.add_voiceover_text(text)
+            elif ssml is not None:
+                yield self.add_voiceover_ssml(ssml)
+        finally:
+            self.wait_for_voiceover()
+
