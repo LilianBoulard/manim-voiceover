@@ -4,6 +4,7 @@ from manim_speech.speech_synthesizer import SpeechSynthesizer
 import os
 from manim import Scene
 from manim_speech.modify_audio import get_duration
+from .azure_interface import AzureTTS
 
 
 class VoiceoverTracker:
@@ -26,15 +27,31 @@ class VoiceoverTracker:
 
 
 class VoiceoverScene(Scene):
-    def init_voiceover(self, speech_synthesizer: SpeechSynthesizer):
+    def init_voiceover(
+        self,
+        speech_synthesizer: SpeechSynthesizer,
+        create_subcaption: bool = True,
+    ):
         self.speech_synthesizer = speech_synthesizer
         self.current_tracker = None
+        self.create_subcaption = create_subcaption
 
-    def add_voiceover_text(self, text: str):
+    def add_voiceover_text(self, text: str, subcaption_buff=0.1):
+        if not hasattr(self, "speech_synthesizer"):
+            raise Exception(
+                "You need to call init_voiceover() before adding a voiceover."
+            )
+
         path = self.speech_synthesizer.synthesize_from_text(text)
         tracker = VoiceoverTracker(self, path)
         self.add_sound(path)
         self.current_tracker = tracker
+
+        if self.create_subcaption:
+            self.add_subcaption(
+                text, duration=max(0, tracker.duration - subcaption_buff)
+            )
+
         return tracker
 
     def add_voiceover_ssml(self, ssml: str):

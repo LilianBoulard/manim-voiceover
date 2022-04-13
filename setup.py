@@ -5,7 +5,7 @@ from distutils.core import setup
 setup(
     name="manim-speech",
     version="0.0.1",
-    description="Module for play.ht API",
+    description="Manim plugin for speech synthesis and voiceover generation",
     author="prism0x",
     author_email="",
     url="",

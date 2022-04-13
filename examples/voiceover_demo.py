@@ -88,7 +88,7 @@ self.play(Write(demo_code), run_time=tracker.duration)''',
         demo_code2 = Code(
             code="""class VoiceoverDemo(VoiceoverScene):
     def construct(self):
-        self.init_voiceover(AzureTTSConfig(
+        self.init_voiceover(AzureTTS(
             voice="en-US-AriaNeural",
             style="newscast-casual",
             global_speed=1.15
@@ -118,7 +118,7 @@ self.play(Write(demo_code), run_time=tracker.duration)''',
 
         with self.voiceover(
             text="""Then, we initialize the voiceover by giving it
-            the appropriate settings. In this example, we use
+            the appropriate speech synthesizer. In this example, we use
             Azure Text-to-speech."""
         ):
             self.play(FadeIn(demo_code2.code[2]))
