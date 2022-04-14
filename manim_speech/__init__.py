@@ -1,10 +1,12 @@
 from contextlib import contextmanager
+from math import ceil
 
 from manim_speech.speech_synthesizer import SpeechSynthesizer
 import os
 from manim import Scene
 from manim_speech.modify_audio import get_duration
 from .azure_interface import AzureTTS
+from .helper import chunks
 
 
 class VoiceoverTracker:
@@ -36,7 +38,7 @@ class VoiceoverScene(Scene):
         self.current_tracker = None
         self.create_subcaption = create_subcaption
 
-    def add_voiceover_text(self, text: str, subcaption_buff=0.1):
+    def add_voiceover_text(self, text: str, subcaption_buff=0.1, max_subcaption_len=70):
         if not hasattr(self, "speech_synthesizer"):
             raise Exception(
                 "You need to call init_voiceover() before adding a voiceover."
@@ -48,11 +50,43 @@ class VoiceoverScene(Scene):
         self.current_tracker = tracker
 
         if self.create_subcaption:
-            self.add_subcaption(
-                text, duration=max(0, tracker.duration - subcaption_buff)
+            self.add_wrapped_subcaption(
+                text,
+                tracker.duration,
+                subcaption_buff=subcaption_buff,
+                max_subcaption_len=max_subcaption_len,
             )
 
         return tracker
+
+    def add_wrapped_subcaption(
+        self,
+        text: str,
+        duration: float,
+        subcaption_buff=0.1,
+        max_subcaption_len: int = 70,
+    ):
+        text = " ".join(text.split())
+        n_chunk = ceil(len(text) / max_subcaption_len)
+        tokens = text.split(" ")
+        chunk_len = ceil(len(tokens) / n_chunk)
+        chunks_ = list(chunks(tokens, chunk_len))
+        assert len(chunks_) == n_chunk
+
+        subcaptions = [" ".join(i) for i in chunks_]
+        subcaption_weights = [
+            len(subcaption) / len("".join(subcaptions)) for subcaption in subcaptions
+        ]
+
+        current_offset = 0
+        for idx, subcaption in enumerate(subcaptions):
+            chunk_duration = duration * subcaption_weights[idx]
+            self.add_subcaption(
+                subcaption,
+                duration=max(chunk_duration - subcaption_buff, 0),
+                offset=current_offset,
+            )
+            current_offset += chunk_duration
 
     def add_voiceover_ssml(self, ssml: str):
         raise NotImplementedError("SSML input not implemented yet.")
@@ -63,9 +97,11 @@ class VoiceoverScene(Scene):
         if self.current_tracker is None:
             return
 
-        remaining_duration = self.current_tracker.get_remaining_duration()
-        if remaining_duration != 0:
-            self.wait(remaining_duration)
+        self.safe_wait(self.current_tracker.get_remaining_duration())
+
+    def safe_wait(self, duration: float):
+        if duration > 0.1:
+            self.wait(duration)
 
     @contextmanager
     def voiceover(self, text=None, ssml=None):
