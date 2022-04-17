@@ -2,19 +2,18 @@ from copy import deepcopy
 import os
 import json
 import hashlib
-import time
 from dotenv import load_dotenv
 
-from .speech_synthesizer import SpeechSynthesizer
-from .modify_audio import adjust_speed
-from pyttsx3 import Engine
+from ..speech_synthesizer import SpeechSynthesizer
+from ..modify_audio import adjust_speed
+# from pyttsx3 import Engine
+from gtts import gTTS
 
 load_dotenv()
 
 
-class PyTTSX3(SpeechSynthesizer):
-    def __init__(self, engine: Engine, **kwargs):
-        self.engine = engine
+class GTTSSpeechSynthesizer(SpeechSynthesizer):
+    def __init__(self, **kwargs):
         SpeechSynthesizer.__init__(self, **kwargs)
 
     def _synthesize_text(self, text, output_dir=None, path=None):
@@ -22,7 +21,7 @@ class PyTTSX3(SpeechSynthesizer):
             output_dir = self.output_dir
 
         # data = {"text": text, "engine": self.engine.__dict__}
-        data = {"text": text, "engine": "pyttsx3"}
+        data = {"text": text, "engine": "gtts"}
         dumped_data = json.dumps(data)
         data_hash = hashlib.sha256(dumped_data.encode("utf-8")).hexdigest()
         file_extension = ".mp3"
@@ -32,9 +31,8 @@ class PyTTSX3(SpeechSynthesizer):
 
             if os.path.exists(path):
                 return path
-        print(text)
-        self.engine.save_to_file(text, path)
-        self.engine.runAndWait()
-        self.engine.stop()
+
+        tts = gTTS(text)
+        tts.save(path)
 
         return path

@@ -5,7 +5,7 @@ from manim_speech.speech_synthesizer import SpeechSynthesizer
 import os
 from manim import Scene
 from manim_speech.modify_audio import get_duration
-from .azure_interface import AzureTTS
+from .interfaces.azure import AzureSpeechSynthesizer
 from .helper import chunks
 
 

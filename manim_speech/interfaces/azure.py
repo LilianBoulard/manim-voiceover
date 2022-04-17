@@ -4,12 +4,12 @@ import json
 import hashlib
 from dotenv import load_dotenv
 
-from .speech_synthesizer import SpeechSynthesizer
+from ..speech_synthesizer import SpeechSynthesizer
 
 load_dotenv()
 
 
-class AzureTTS(SpeechSynthesizer):
+class AzureSpeechSynthesizer(SpeechSynthesizer):
     def __init__(
         self,
         voice="en-US-AriaNeural",
