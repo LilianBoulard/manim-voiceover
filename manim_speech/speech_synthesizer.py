@@ -19,9 +19,11 @@ class SpeechSynthesizer:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-    def synthesize_from_text(self, text, path=None):
-        if "\n" in text:
-            text = text.replace("\n", " ")
+    def synthesize_from_text(self, text: str, path=None):
+        # Replace newlines with lines, reduce multiple consecutive spaces to single
+        text = text.replace("\n", " ")
+        text = " ".join(text.split())
+
         path = self._synthesize_text(text, output_dir=None, path=path)
 
         if self.global_speed != 1:

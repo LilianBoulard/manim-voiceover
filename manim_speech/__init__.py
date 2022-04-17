@@ -38,7 +38,7 @@ class VoiceoverScene(Scene):
         self.current_tracker = None
         self.create_subcaption = create_subcaption
 
-    def add_voiceover_text(self, text: str, subcaption_buff=0.1, max_subcaption_len=70):
+    def add_voiceover_text(self, text: str, subcaption_buff=0.1, max_subcaption_len=70, subcaption=None):
         if not hasattr(self, "speech_synthesizer"):
             raise Exception(
                 "You need to call init_voiceover() before adding a voiceover."
@@ -50,8 +50,11 @@ class VoiceoverScene(Scene):
         self.current_tracker = tracker
 
         if self.create_subcaption:
+            if subcaption is None:
+                subcaption = text
+
             self.add_wrapped_subcaption(
-                text,
+                subcaption,
                 tracker.duration,
                 subcaption_buff=subcaption_buff,
                 max_subcaption_len=max_subcaption_len,
@@ -61,14 +64,14 @@ class VoiceoverScene(Scene):
 
     def add_wrapped_subcaption(
         self,
-        text: str,
+        subcaption: str,
         duration: float,
         subcaption_buff=0.1,
         max_subcaption_len: int = 70,
     ):
-        text = " ".join(text.split())
-        n_chunk = ceil(len(text) / max_subcaption_len)
-        tokens = text.split(" ")
+        subcaption = " ".join(subcaption.split())
+        n_chunk = ceil(len(subcaption) / max_subcaption_len)
+        tokens = subcaption.split(" ")
         chunk_len = ceil(len(tokens) / n_chunk)
         chunks_ = list(chunks(tokens, chunk_len))
         assert len(chunks_) == n_chunk
@@ -104,14 +107,14 @@ class VoiceoverScene(Scene):
             self.wait(duration)
 
     @contextmanager
-    def voiceover(self, text=None, ssml=None):
+    def voiceover(self, text=None, ssml=None, **kwargs):
         if text is None and ssml is None:
             raise ValueError("Please specify either a voiceover text or SSML string.")
 
         try:
             if text is not None:
-                yield self.add_voiceover_text(text)
+                yield self.add_voiceover_text(text, **kwargs)
             elif ssml is not None:
-                yield self.add_voiceover_ssml(ssml)
+                yield self.add_voiceover_ssml(ssml, **kwargs)
         finally:
             self.wait_for_voiceover()

@@ -1,8 +1,8 @@
 from copy import deepcopy
 import os
-import pyttsx3
 import json
 import hashlib
+import time
 from dotenv import load_dotenv
 
 from .speech_synthesizer import SpeechSynthesizer
@@ -14,10 +14,6 @@ load_dotenv()
 
 class PyTTSX3(SpeechSynthesizer):
     def __init__(self, engine: Engine, **kwargs):
-        # engine.say('Sally sells seashells by the seashore.')
-        # engine.say('The quick brown fox jumped over the lazy dog.')
-        # engine.runAndWait()
-
         self.engine = engine
         SpeechSynthesizer.__init__(self, **kwargs)
 
@@ -36,7 +32,9 @@ class PyTTSX3(SpeechSynthesizer):
 
             if os.path.exists(path):
                 return path
-
+        print(text)
         self.engine.save_to_file(text, path)
         self.engine.runAndWait()
+        self.engine.stop()
+
         return path
