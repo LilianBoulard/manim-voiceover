@@ -15,7 +15,8 @@ setup(
         "azure-cognitiveservices-speech",
         "python-dotenv",
         "pygments",
-        "pyttsx3"
+        "pyttsx3",
+        "gTTS",
     ],
     packages=["manim_speech"],
 )
