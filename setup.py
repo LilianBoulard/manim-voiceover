@@ -17,6 +17,7 @@ setup(
         "pygments",
         "pyttsx3",
         "gTTS",
+        "pydub"
     ],
     packages=["manim_speech"],
 )

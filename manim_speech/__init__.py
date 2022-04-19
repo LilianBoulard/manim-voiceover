@@ -1,13 +1,15 @@
 from contextlib import contextmanager
 from math import ceil
 
-from manim_speech.speech_synthesizer import SpeechSynthesizer
 import os
-from manim import Scene
+from pathlib import Path
+
+from manim import Scene, config
 from manim_speech.modify_audio import get_duration
-from .interfaces.azure import AzureSpeechSynthesizer
+from manim_speech.speech_synthesizer import SpeechSynthesizer
 from .helper import chunks
 
+SCRIPT_FILE_PATH = "media/script.txt"
 
 class VoiceoverTracker:
     def __init__(self, scene: Scene, path):
@@ -33,12 +35,19 @@ class VoiceoverScene(Scene):
         self,
         speech_synthesizer: SpeechSynthesizer,
         create_subcaption: bool = True,
+        create_script: bool = True,
     ):
         self.speech_synthesizer = speech_synthesizer
         self.current_tracker = None
         self.create_subcaption = create_subcaption
+        self.create_script = create_script
 
-    def add_voiceover_text(self, text: str, subcaption_buff=0.1, max_subcaption_len=70, subcaption=None):
+        open(SCRIPT_FILE_PATH, "w")
+
+
+    def add_voiceover_text(
+        self, text: str, subcaption_buff=0.1, max_subcaption_len=70, subcaption=None
+    ):
         if not hasattr(self, "speech_synthesizer"):
             raise Exception(
                 "You need to call init_voiceover() before adding a voiceover."
@@ -48,6 +57,9 @@ class VoiceoverScene(Scene):
         tracker = VoiceoverTracker(self, path)
         self.add_sound(path)
         self.current_tracker = tracker
+
+        if self.create_script:
+            self.save_to_script_file(text)
 
         if self.create_subcaption:
             if subcaption is None:
@@ -93,6 +105,15 @@ class VoiceoverScene(Scene):
 
     def add_voiceover_ssml(self, ssml: str):
         raise NotImplementedError("SSML input not implemented yet.")
+
+    def save_to_script_file(self, text: str):
+        text = " ".join(text.split())
+
+        # script_file_path = Path(config.get_dir("output_file")).with_suffix(".script.srt")
+
+        with open(SCRIPT_FILE_PATH, "a") as f:
+            f.write(text)
+            f.write("\n\n")
 
     def wait_for_voiceover(self):
         if not hasattr(self, "current_tracker"):
