@@ -2,29 +2,13 @@ import os
 import json
 import itertools
 from pydub import AudioSegment
-from pydub.utils import get_array_type
 
 # from pydub.silence import split_on_silence
 
 from pydub.silence import detect_nonsilent
-from dotenv import load_dotenv
-import numpy as np
 import hashlib
 
-import array
-
-import matplotlib.pyplot as plt
-
 from ..speech_synthesizer import SpeechSynthesizer
-
-load_dotenv()
-
-
-def get_array_of_samples(self):
-    """
-    returns the raw_data as an array of samples
-    """
-    return np.array(array.array(self.array_type, self._data))
 
 
 def split_on_silence_modified(
@@ -117,7 +101,6 @@ class RecordingMapper(SpeechSynthesizer):
 
     def process_audio(self):
         segment = AudioSegment.from_file(self.path)
-        # import ipdb; ipdb.set_trace()
 
         # Check whether the audio file has already been processed
         if os.path.exists(self.get_json_path()):
@@ -137,7 +120,6 @@ class RecordingMapper(SpeechSynthesizer):
                         return
             except KeyError:
                 pass
-            # import ipdb; ipdb.set_trace()
 
         chunks = split_on_silence_modified(segment, **self.split_params)
 
