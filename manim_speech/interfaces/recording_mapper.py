@@ -10,13 +10,15 @@ import hashlib
 
 from ..speech_synthesizer import SpeechSynthesizer
 
-
+# Had to modify `split_on_silence` from pydub to allow for
+# keeping different durations of silence at chunk beginnings and ends
 def split_on_silence_modified(
     audio_segment,
     min_silence_len=1000,
     silence_thresh=-16,
     keep_silence=[100, 1000],
-    seek_step=1,
+    seek_step=10,
+    **kwargs,
 ):
     """
     Returns list of audio segments from splitting audio_segment on silent sections
@@ -82,34 +84,33 @@ def split_on_silence_modified(
 class RecordingMapper(SpeechSynthesizer):
     def __init__(
         self,
-        path: str,
-        pause_duration: float = 2,
-        split_params={
-            "min_silence_len": 2000,
-            "silence_thresh": -45,
-            # "keep_silence": 100,
-        },
+        source_path: str,
+        min_silence_len=2000,
+        silence_thresh=-45,
+        seek_step=10,
+        keep_silence=[100, 1000],
         **kwargs,
     ):
-        self.path = path
-        self.pause_duration = pause_duration
-        self.split_params = split_params
+        self.params = {
+            "source_path": source_path,
+            "min_silence_len": min_silence_len,
+            "silence_thresh": silence_thresh,
+            "seek_step": seek_step,
+            "keep_silence": keep_silence,
+        }
 
         SpeechSynthesizer.__init__(self, **kwargs)
         self.process_audio()
         self.current_segment_index = 0
 
     def process_audio(self):
-        segment = AudioSegment.from_file(self.path)
+        segment = AudioSegment.from_file(self.params["source_path"])
 
         # Check whether the audio file has already been processed
         if os.path.exists(self.get_json_path()):
             config = json.load(open(self.get_json_path(), "r"))
             try:
-                if (
-                    self.path == config["source_path"]
-                    and self.split_params == config["split_params"]
-                ):
+                if self.params == config["params"]:
                     all_files_exist = True
                     for segment in config["segments"]:
                         if not os.path.exists(segment["path"]):
@@ -121,24 +122,17 @@ class RecordingMapper(SpeechSynthesizer):
             except KeyError:
                 pass
 
-        chunks = split_on_silence_modified(segment, **self.split_params)
+        chunks = split_on_silence_modified(segment, **self.params)
 
         output_dict = {
-            "source_path": self.path,
-            "split_params": self.split_params,
+            "params": self.params,
             "segments": [],
         }
         for i, chunk in enumerate(chunks):
-            # Create a silence chunk that's 0.5 seconds (or 500 ms) long for padding.
             # silence_chunk = AudioSegment.silent(duration=800)
-
-            # Add the padding chunk to beginning and end of the entire chunk.
             # audio_chunk = chunk + silence_chunk
             audio_chunk = chunk
-
-            # Normalize the entire chunk.
             # normalized_chunk = match_target_amplitude(audio_chunk, -20.0)
-
             data_hash = hashlib.sha256(audio_chunk.raw_data).hexdigest()
 
             # Export the audio chunk with new bitrate.
@@ -150,12 +144,12 @@ class RecordingMapper(SpeechSynthesizer):
             )
             output_dict["segments"].append({"index": i, "path": output_path})
 
-        # Save info about the chunks
+        # Save output info
         with open(self.get_json_path(), "w") as f:
             f.write(json.dumps(output_dict, indent=4))
 
     def get_json_path(self):
-        return os.path.splitext(self.path)[0] + ".json"
+        return os.path.splitext(self.params["source_path"])[0] + ".json"
 
     def _synthesize_text(self, text, output_dir=None, path=None):
         config = json.load(open(self.get_json_path(), "r"))

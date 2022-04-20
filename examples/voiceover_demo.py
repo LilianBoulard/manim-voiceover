@@ -18,10 +18,10 @@ class VoiceoverDemo(VoiceoverScene):
         #         voice="en-US-AriaNeural", style="newscast-casual", global_speed=1.15
         #     )
         # )
-        # self.init_voiceover(RecordingMapper("voiceover_demo_recording.mp3", global_speed=1.05))
+        self.init_voiceover(RecordingMapper("voiceover_demo_recording.mp3"))
 
         # self.init_voiceover(PyTTSX3SpeechSynthesizer(pyttsx3.init(), global_speed=1.15))
-        self.init_voiceover(GTTSSpeechSynthesizer(global_speed=1.15))
+        # self.init_voiceover(GTTSSpeechSynthesizer(global_speed=1.15))
 
         banner = ManimBanner().scale(0.5)
 
