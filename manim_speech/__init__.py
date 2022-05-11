@@ -1,8 +1,7 @@
 from contextlib import contextmanager
 from math import ceil
-
+import json
 import os
-from pathlib import Path
 
 from manim import Scene, config
 from manim_speech.modify_audio import get_duration
@@ -11,11 +10,13 @@ from .helper import chunks
 
 SCRIPT_FILE_PATH = "media/script.txt"
 
+
 class VoiceoverTracker:
     def __init__(self, scene: Scene, path):
         self.scene = scene
         self.path = path
-        self.duration = get_duration(path)
+        self.data = json.loads(open(path, "r").read())
+        self.duration = get_duration(self.data["final_audio"])
         # last_t = scene.last_t
         last_t = scene.renderer.time
         if last_t is None:
@@ -44,7 +45,6 @@ class VoiceoverScene(Scene):
 
         open(SCRIPT_FILE_PATH, "w")
 
-
     def add_voiceover_text(
         self, text: str, subcaption_buff=0.1, max_subcaption_len=70, subcaption=None
     ):
@@ -53,9 +53,9 @@ class VoiceoverScene(Scene):
                 "You need to call init_voiceover() before adding a voiceover."
             )
 
-        path = self.speech_synthesizer.synthesize_from_text(text)
-        tracker = VoiceoverTracker(self, path)
-        self.add_sound(path)
+        dict_ = self.speech_synthesizer.synthesize_from_text(text)
+        tracker = VoiceoverTracker(self, dict_["json_path"])
+        self.add_sound(dict_["final_audio"])
         self.current_tracker = tracker
 
         if self.create_script:
@@ -86,7 +86,7 @@ class VoiceoverScene(Scene):
         tokens = subcaption.split(" ")
         chunk_len = ceil(len(tokens) / n_chunk)
         chunks_ = list(chunks(tokens, chunk_len))
-        assert len(chunks_) == n_chunk
+        assert len(chunks_) == n_chunk or len(chunks_) == n_chunk - 1
 
         subcaptions = [" ".join(i) for i in chunks_]
         subcaption_weights = [

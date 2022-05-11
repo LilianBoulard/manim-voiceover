@@ -30,22 +30,23 @@ class AzureSpeechSynthesizer(SpeechSynthesizer):
 
         if self.style is not None:
             inner = r"""<mstts:express-as style="%s">
-                    %s
-                </mstts:express-as>""" % (
+    %s
+</mstts:express-as>""" % (
                 self.style,
                 inner,
             )
 
         ssml = r"""<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis"
-            xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="en-US">
-            <voice name="%s">
-                %s
-            </voice>
-        </speak>
+    xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="en-US">
+    <voice name="%s">
+        %s
+    </voice>
+</speak>
         """ % (
             self.voice,
             inner,
         )
+
         data = {"ssml": ssml, "config": self.__dict__}
         data_hash = self.get_data_hash(data)
 
@@ -56,10 +57,14 @@ class AzureSpeechSynthesizer(SpeechSynthesizer):
             raise Exception("Unrecognized output format")
 
         if path is None:
-            path = os.path.join(output_dir, data_hash + file_extension)
+            audio_path = os.path.join(output_dir, data_hash + ".mp3")
+            json_path = os.path.join(output_dir, data_hash + ".json")
 
-            if os.path.exists(path):
-                return path
+            if os.path.exists(json_path):
+                return json.loads(open(json_path, "r").read())
+        else:
+            audio_path = path
+            json_path = os.path.splitext(path)[0] + ".json"
 
         speech_config = speechsdk.SpeechConfig(
             subscription=os.environ["AZURE_SUBSCRIPTION_KEY"],
@@ -68,12 +73,33 @@ class AzureSpeechSynthesizer(SpeechSynthesizer):
         speech_config.set_speech_synthesis_output_format(
             speechsdk.SpeechSynthesisOutputFormat[self.output_format]
         )
-        audio_config = speechsdk.audio.AudioOutputConfig(filename=path)
+        audio_config = speechsdk.audio.AudioOutputConfig(filename=audio_path)
 
         speech_synthesizer = speechsdk.SpeechSynthesizer(
             speech_config=speech_config, audio_config=audio_config
         )
+        word_boundaries = []
+        # speech_synthesizer.bookmark_reached.connect(lambda evt: print(
+        #     "Bookmark reached: {}, audio offset: {}ms, bookmark text: {}.".format(evt, evt.audio_offset, evt.text)))
+        def process_event(evt):
+            result = {label[1:]: val for label, val in evt.__dict__.items()}
+            result["boundary_type"] = result["boundary_type"].name
+            result["audio_offset"] -= 219
+            return result
+
+        speech_synthesizer.synthesis_word_boundary.connect(
+            lambda evt: word_boundaries.append(process_event(evt))
+        )
+
         speech_synthesis_result = speech_synthesizer.speak_ssml(ssml)
+        json_dict = {
+            "ssml": ssml,
+            "word_boundaries": word_boundaries,
+            "original_audio": audio_path,
+            "json_path": json_path,
+        }
+
+        # open(json_path, "w").write(json.dumps(json_dict, indent=2))
 
         if (
             speech_synthesis_result.reason
@@ -90,4 +116,4 @@ class AzureSpeechSynthesizer(SpeechSynthesizer):
                     )
             raise Exception("Speech synthesis failed")
 
-        return path
+        return json_dict

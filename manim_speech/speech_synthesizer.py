@@ -23,15 +23,25 @@ class SpeechSynthesizer:
         # Replace newlines with lines, reduce multiple consecutive spaces to single
         text = " ".join(text.split())
 
-        path = self._synthesize_text(text, output_dir=None, path=path)
+        dict_ = self._synthesize_text(text, output_dir=None, path=path)
+        # path = dict_["original_audio"]
+        # import ipdb; ipdb.set_trace()
 
         if self.global_speed != 1:
-            split_path = os.path.splitext(path)
+            split_path = os.path.splitext(dict_["original_audio"])
             adjusted_path = split_path[0] + "_adjusted" + split_path[1]
-            adjust_speed(path, adjusted_path, self.global_speed)
-            path = adjusted_path
+            adjust_speed(dict_["original_audio"], adjusted_path, self.global_speed)
+            dict_["final_audio"] = adjusted_path
+            if "word_boundaries" in dict_:
+                for word_boundary in dict_["word_boundaries"]:
+                    word_boundary["audio_offset"] = int(
+                        word_boundary["audio_offset"] / self.global_speed
+                    )
+        else:
+            dict_["final_audio"] = dict_["original_audio"]
 
-        return path
+        open(dict_["json_path"], "w").write(json.dumps(dict_))
+        return dict_
 
     def get_data_hash(self, data):
         dumped_data = json.dumps(data)

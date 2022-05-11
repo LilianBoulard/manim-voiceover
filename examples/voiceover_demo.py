@@ -13,12 +13,12 @@ code_style = code_styles.get_style_by_name("monokai")
 class VoiceoverDemo(VoiceoverScene):
     def construct(self):
         # Initialize speech synthesis using Azure's TTS API
-        # self.init_voiceover(
-        #     AzureSpeechSynthesizer(
-        #         voice="en-US-AriaNeural", style="newscast-casual", global_speed=1.15
-        #     )
-        # )
-        self.init_voiceover(RecordingMapper("voiceover_demo_recording.mp3"))
+        self.init_voiceover(
+            AzureSpeechSynthesizer(
+                voice="en-US-AriaNeural", style="newscast-casual", global_speed=1.15
+            )
+        )
+        # self.init_voiceover(RecordingMapper("voiceover_demo_recording.mp3"))
 
         # self.init_voiceover(PyTTSX3SpeechSynthesizer(pyttsx3.init(), global_speed=1.15))
         # self.init_voiceover(GTTSSpeechSynthesizer(global_speed=1.15))
