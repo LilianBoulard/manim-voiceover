@@ -2,11 +2,36 @@
 
 This is a [Manim](https://manim.community) plugin for generating voiceovers for your Manim animations.
 
-It currently supports [Azure Text to Speech](https://azure.microsoft.com/en-us/services/cognitive-services/text-to-speech/).
+It currently supports [Azure Text to Speech](https://azure.microsoft.com/en-us/services/cognitive-services/text-to-speech/), [gTTS](https://github.com/pndurette/gTTS/) and [pyttsx3](https://github.com/nateshmbhat/pyttsx3).
 
-## Install
+## Install in development mode
 
-This plugin requires that [SoX](http://sox.sourceforge.net/) version 14.4.2 or higher is installed.
+`manim-speech` is in active development, so we recommend you to install it in developer mode:
+
+```sh
+# Clone the repository and change directory
+git clone git@github.com:MathBlocks/manim-speech.git
+cd manim-speech/
+
+# Install the package in development mode
+pip3 install --editable .
+
+# Render and play the first example
+manim -pql examples/example1.py --disable_caching
+```
+
+If you only hear the first line, you need to run `manim` with the `--disable_caching` flag. This is due to a bug in Manim and will be fixed in the future.
+
+<!-- Once SoX is installed, proceed with installing `manim-speech`:
+
+```sh
+cd manim-speech
+python setup.py install
+``` -->
+
+### Installing SoX
+
+`manim-speech` can make the output from speech synthesizers faster or slower using [SoX](http://sox.sourceforge.net/). For this to work, version 14.4.2 or higher needs to be installed.
 
 To install SoX on Mac with Homebrew:
 
@@ -18,13 +43,13 @@ On Debian based distros:
 
 or install [from source](https://sourceforge.net/projects/sox/files/sox/).
 
-Once SoX is installed, proceed with installing `manim-speech`:
+## Examples
 
-```sh
-python setup.py install
-```
+See the [examples directory](./examples).
 
-## Configure
+## Configuring Azure
+
+The highest quality text-to-speech available to the public is currently offered by Microsoft Azure.
 
 Create a file called `.env` in the same directory where you call Manim with your authentication information.
 
@@ -34,7 +59,3 @@ For Azure, you need to specify your subscription key and service region. Check o
 AZURE_SUBSCRIPTION_KEY="..."
 AZURE_SERVICE_REGION="..."
 ```
-
-## Examples
-
-See the [examples directory](./examples).

@@ -8,7 +8,7 @@ from ..speech_synthesizer import SpeechSynthesizer
 from ..modify_audio import adjust_speed
 
 # from pyttsx3 import Engine
-from gtts import gTTS
+from gtts import gTTS, gTTSError
 
 load_dotenv()
 
@@ -43,7 +43,11 @@ class GTTSSpeechSynthesizer(SpeechSynthesizer):
             json_path = os.path.splitext(path)[0] + ".json"
 
         tts = gTTS(text)
-        tts.save(audio_path)
+        try:
+            tts.save(audio_path)
+        except gTTSError:
+            raise Exception("gTTS requires an internet connection to work.")
+
         json_dict = {
             # "ssml": ssml,
             # "word_boundaries": word_boundaries,

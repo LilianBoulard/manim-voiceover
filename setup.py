@@ -18,8 +18,8 @@ setup(
         "pyttsx3",
         "gTTS",
         "pydub",
-        "stt",
         "mutagen",
+        # "stt",
     ],
     packages=["manim_speech"],
 )
