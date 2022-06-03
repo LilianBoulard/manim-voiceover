@@ -66,9 +66,17 @@ class AzureSpeechSynthesizer(SpeechSynthesizer):
             audio_path = path
             json_path = os.path.splitext(path)[0] + ".json"
 
+        try:
+            azure_subscription_key = os.environ["AZURE_SUBSCRIPTION_KEY"]
+            azure_service_region = os.environ["AZURE_SERVICE_REGION"]
+        except KeyError:
+            raise Exception(
+                "Microsoft Azure's text-to-speech API needs account credentials to connect. You can create an account for free and (as of writing this) get a free quota of TTS minutes. Check out the documentation for instructions."
+            )
+
         speech_config = speechsdk.SpeechConfig(
-            subscription=os.environ["AZURE_SUBSCRIPTION_KEY"],
-            region=os.environ["AZURE_SERVICE_REGION"],
+            subscription=azure_subscription_key,
+            region=azure_service_region,
         )
         speech_config.set_speech_synthesis_output_format(
             speechsdk.SpeechSynthesisOutputFormat[self.output_format]

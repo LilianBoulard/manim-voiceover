@@ -1,10 +1,9 @@
 from manim import *
-import pygments.styles as code_styles
 from manim_speech import VoiceoverScene
 from manim_speech.interfaces.gtts import GTTSSpeechSynthesizer
 
 
-class Example1(VoiceoverScene):
+class GTTSExample(VoiceoverScene):
     def construct(self):
         self.init_voiceover(GTTSSpeechSynthesizer())
 
