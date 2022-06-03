@@ -22,6 +22,8 @@ manim -pql examples/example1.py --disable_caching
 
 If you only hear the first line, you need to run `manim` with the `--disable_caching` flag. This is due to a bug in Manim and will be fixed in the future.
 
+[The first example](examples/example1.py) uses [gTTS](https://github.com/pndurette/gTTS/) which calls the Google Translate API and therefore needs an internet connection to work. If it throws an error, there might be a problem with your internet connection or the Google Translate API.
+
 <!-- Once SoX is installed, proceed with installing `manim-speech`:
 
 ```sh
