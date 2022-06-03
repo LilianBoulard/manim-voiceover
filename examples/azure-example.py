@@ -5,7 +5,7 @@ from manim_speech.interfaces.azure import AzureSpeechSynthesizer
 
 class GTTSExample(VoiceoverScene):
     def construct(self):
-        self.init_voiceover(
+        self.set_speech_synthesizer(
             AzureSpeechSynthesizer(
                 voice="en-US-AriaNeural",
                 style="newscast-casual",

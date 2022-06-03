@@ -1,12 +1,9 @@
-from copy import deepcopy
-from email.mime import audio
 import os
 import json
 import hashlib
 from dotenv import load_dotenv
 
 from ..speech_synthesizer import SpeechSynthesizer
-from ..modify_audio import adjust_speed
 from pyttsx3 import Engine
 
 load_dotenv()

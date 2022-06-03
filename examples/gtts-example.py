@@ -5,7 +5,7 @@ from manim_speech.interfaces.gtts import GTTSSpeechSynthesizer
 
 class GTTSExample(VoiceoverScene):
     def construct(self):
-        self.init_voiceover(GTTSSpeechSynthesizer())
+        self.set_speech_synthesizer(GTTSSpeechSynthesizer())
 
         circle = Circle()
         square = Square().shift(2 * RIGHT)

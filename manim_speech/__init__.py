@@ -32,7 +32,7 @@ class VoiceoverTracker:
 
 
 class VoiceoverScene(Scene):
-    def init_voiceover(
+    def set_speech_synthesizer(
         self,
         speech_synthesizer: SpeechSynthesizer,
         create_subcaption: bool = True,
