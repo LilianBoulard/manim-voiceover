@@ -1,10 +1,12 @@
 from manim import *
 import pygments.styles as code_styles
 from manim_speech import VoiceoverScene
+
 # from manim_speech.interfaces.azure import AzureSpeechSynthesizer
 # from manim_speech.interfaces.pyttsx3 import PyTTSX3SpeechSynthesizer
-from manim_speech.interfaces.gtts import GTTSSpeechSynthesizer
-# from manim_speech.interfaces.recording_mapper import RecordingMapper
+# from manim_speech.interfaces.gtts import GTTSSpeechSynthesizer
+from manim_speech.interfaces.recording_mapper import RecordingMapper
+
 # import pyttsx3
 
 code_style = code_styles.get_style_by_name("monokai")
@@ -18,10 +20,13 @@ class VoiceoverDemo(VoiceoverScene):
         #         voice="en-US-AriaNeural", style="newscast-casual", #global_speed=1.15
         #     )
         # )
-        # self.set_speech_synthesizer(RecordingMapper("voiceover_demo_recording.mp3"))
+        dirname = os.path.dirname(os.path.abspath(__file__))
+        self.set_speech_synthesizer(
+            RecordingMapper(dirname + "/voiceover_demo_recording.mp3")
+        )
 
         # self.set_speech_synthesizer(PyTTSX3SpeechSynthesizer(pyttsx3.init(), global_speed=1.15))
-        self.set_speech_synthesizer(GTTSSpeechSynthesizer())
+        # self.set_speech_synthesizer(GTTSSpeechSynthesizer())
 
         banner = ManimBanner().scale(0.5)
 

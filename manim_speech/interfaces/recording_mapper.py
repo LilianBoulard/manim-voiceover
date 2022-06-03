@@ -153,7 +153,15 @@ class RecordingMapper(SpeechSynthesizer):
 
     def _synthesize_text(self, text, output_dir=None, path=None):
         config = json.load(open(self.get_json_path(), "r"))
-        path = config["segments"][self.current_segment_index]["path"]
+        audio_path = config["segments"][self.current_segment_index]["path"]
+        json_path = os.path.splitext(audio_path)[0] + ".json"
+
         self.current_segment_index += 1
 
-        return path
+        json_dict = {
+            # "word_boundaries": word_boundaries,
+            "original_audio": audio_path,
+            "json_path": json_path,
+        }
+
+        return json_dict
