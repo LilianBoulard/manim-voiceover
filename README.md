@@ -6,7 +6,7 @@ It currently supports [Azure Text to Speech](https://azure.microsoft.com/en-us/s
 
 ## Install in development mode
 
-`manim-speech` is in active development, so we recommend you to install it in developer mode:
+`manim-speech` is in active development, so we recommend you to install it in development mode:
 
 ```sh
 # Clone the repository and change directory

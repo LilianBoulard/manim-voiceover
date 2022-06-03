@@ -1,16 +1,9 @@
-from copy import deepcopy
 import os
 import json
 import hashlib
-from dotenv import load_dotenv
-
-from ..speech_synthesizer import SpeechSynthesizer
-from ..modify_audio import adjust_speed
-
-# from pyttsx3 import Engine
 from gtts import gTTS, gTTSError
 
-load_dotenv()
+from ..speech_synthesizer import SpeechSynthesizer
 
 
 class GTTSSpeechSynthesizer(SpeechSynthesizer):
@@ -25,13 +18,7 @@ class GTTSSpeechSynthesizer(SpeechSynthesizer):
         data = {"text": text, "engine": "gtts"}
         dumped_data = json.dumps(data)
         data_hash = hashlib.sha256(dumped_data.encode("utf-8")).hexdigest()
-        # file_extension = ".mp3"
 
-        # if path is None:
-        #     path = os.path.join(output_dir, data_hash + file_extension)
-
-        #     if os.path.exists(path):
-        #         return path
         if path is None:
             audio_path = os.path.join(output_dir, data_hash + ".mp3")
             json_path = os.path.join(output_dir, data_hash + ".json")
@@ -46,10 +33,11 @@ class GTTSSpeechSynthesizer(SpeechSynthesizer):
         try:
             tts.save(audio_path)
         except gTTSError:
-            raise Exception("gTTS requires an internet connection to work.")
+            raise Exception(
+                "gTTS gave an error. You are either not connected to the internet, or there is a problem with the Google Translate API."
+            )
 
         json_dict = {
-            # "ssml": ssml,
             # "word_boundaries": word_boundaries,
             "original_audio": audio_path,
             "json_path": json_path,
