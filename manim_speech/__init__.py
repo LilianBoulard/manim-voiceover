@@ -86,7 +86,10 @@ class VoiceoverScene(Scene):
         tokens = subcaption.split(" ")
         chunk_len = ceil(len(tokens) / n_chunk)
         chunks_ = list(chunks(tokens, chunk_len))
-        assert len(chunks_) == n_chunk or len(chunks_) == n_chunk - 1
+        try:
+            assert len(chunks_) == n_chunk or len(chunks_) == n_chunk - 1
+        except AssertionError:
+            import ipdb; ipdb.set_trace()
 
         subcaptions = [" ".join(i) for i in chunks_]
         subcaption_weights = [
@@ -124,7 +127,7 @@ class VoiceoverScene(Scene):
         self.safe_wait(self.current_tracker.get_remaining_duration())
 
     def safe_wait(self, duration: float):
-        if duration > 0.1:
+        if duration > 1 / config["frame_rate"]:
             self.wait(duration)
 
     @contextmanager

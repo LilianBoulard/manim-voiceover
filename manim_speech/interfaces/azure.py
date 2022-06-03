@@ -84,7 +84,7 @@ class AzureSpeechSynthesizer(SpeechSynthesizer):
         def process_event(evt):
             result = {label[1:]: val for label, val in evt.__dict__.items()}
             result["boundary_type"] = result["boundary_type"].name
-            result["audio_offset"] -= 219
+            result["text_offset"] = result["text_offset"] - 222
             return result
 
         speech_synthesizer.synthesis_word_boundary.connect(
