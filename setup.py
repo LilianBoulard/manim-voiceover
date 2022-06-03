@@ -19,6 +19,7 @@ setup(
         "gTTS",
         "pydub",
         "stt",
+        "mutagen",
     ],
     packages=["manim_speech"],
 )

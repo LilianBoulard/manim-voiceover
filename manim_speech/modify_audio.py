@@ -1,6 +1,7 @@
 import os
 import sox
 import uuid
+from mutagen.mp3 import MP3
 
 
 def adjust_speed(input_path, output_path, tempo):
@@ -20,4 +21,6 @@ def adjust_speed(input_path, output_path, tempo):
         os.rename(output_path, input_path)
 
 def get_duration(path):
-    return sox.file_info.duration(path)
+    audio = MP3(path)
+    return audio.info.length
+    # return sox.file_info.duration(path)
