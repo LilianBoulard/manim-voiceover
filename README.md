@@ -68,7 +68,7 @@ class MyAwesomeScene(VoiceoverScene):
         ...
 ```
 
-`manim-speech` offers multiple text-to-speech engines, some proprietary and some free. A good one to start with is gTTS, which uses Google Translate's proprietary API. We found out that this is the best beginner's solution in terms of cross-platform compatibility.
+`manim-speech` offers multiple text-to-speech engines, some proprietary and some free. A good one to start with is gTTS, which uses Google Translate's proprietary API. We found out that this is the best for beginners in terms of cross-platform compatibility---however it needs an internet connection.
 
 ```py
 from manim_speech import VoiceoverScene
@@ -86,7 +86,7 @@ with self.voiceover(text="This circle is drawn as I speak.") as tracker:
     ... # animate whatever needs to be animated here
 ```
 
-Manim will animate whatever is inside that with block. If the voiceover hasn't finished by the end of the animation, Manim simply waits until it does. You can further use the `tracker` object for getting the total or remaining duration of the voiceover programmatically, which gives you finer control over the video:
+Manim will animate whatever is inside that with block. If the voiceover hasn't finished by the end of the animation, Manim will simply wait until it does. You can further use the `tracker` object for getting the total or remaining duration of the voiceover programmatically, which gives you finer control over the video:
 
 ```py
 with self.voiceover(text="This circle is drawn as I speak.") as tracker:
