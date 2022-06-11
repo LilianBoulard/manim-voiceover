@@ -1,24 +1,24 @@
-# manim-speech
+# manim-voiceover
 
-`manim-speech` is a [Manim](https://manim.community) plugin that helps you add voiceovers to your Manim videos directly in your code, without using a video editor. It allows you to do two very important things:
+`manim-voiceover` is a [Manim](https://manim.community) plugin that helps you add voiceovers to your Manim videos directly in your code, without using a video editor. It allows you to do two very important things:
 
 1. **Develop your animation with an auto-generated AI voice** without having to re-record and re-sync the audio every time you make a change to your screenplay.
 2. When you are ready to release the final cut, **record the actual voiceover with a microphone, and replace the AI-generated voice with your recording** by changing a few lines of code.
 
-In other words, it is possible to produce entire videos without ever having to use an external video editor. Watch the YouTube video for a brief tour of the functionality offered by `manim-speech`:
+In other words, it is possible to produce entire videos without ever having to use an external video editor. Watch the YouTube video for a brief tour of the functionality offered by `manim-voiceover`:
 
-[![Manim-speech YouTube introduction](http://img.youtube.com/vi/3S-8fsuxHVI/0.jpg)](http://www.youtube.com/watch?v=3S-8fsuxHVI "How to add voiceovers to your Manim videos easily with manim-speech")
+[![Manim-voiceover YouTube introduction](http://img.youtube.com/vi/3S-8fsuxHVI/0.jpg)](http://www.youtube.com/watch?v=3S-8fsuxHVI "How to add voiceovers to your Manim videos easily with manim-voiceover")
 
 It currently supports [Azure Text to Speech](https://azure.microsoft.com/en-us/services/cognitive-services/text-to-speech/), [gTTS](https://github.com/pndurette/gTTS/) and [pyttsx3](https://github.com/nateshmbhat/pyttsx3).
 
 ## Install in development mode
 
-`manim-speech` is in active development, so we recommend you to install it in development mode:
+`manim-voiceover` is in active development, so we recommend you to install it in development mode:
 
 ```sh
 # Clone the repository and change directory
-git clone git@github.com:MathBlocks/manim-speech.git
-cd manim-speech/
+git clone git@github.com:MathBlocks/manim-voiceover.git
+cd manim-voiceover/
 
 # Install the package in development mode
 pip3 install --editable .
@@ -31,16 +31,16 @@ If you only hear the first line, you need to run `manim` with the `--disable_cac
 
 [The example above](examples/gtts-example.py) uses [gTTS](https://github.com/pndurette/gTTS/) which calls the Google Translate API and therefore needs an internet connection to work. If it throws an error, there might be a problem with your internet connection or the Google Translate API.
 
-<!-- Once SoX is installed, proceed with installing `manim-speech`:
+<!-- Once SoX is installed, proceed with installing `manim-voiceover`:
 
 ```sh
-cd manim-speech
+cd manim-voiceover
 python setup.py install
 ``` -->
 
 ### Installing SoX
 
-`manim-speech` can make the output from speech synthesizers faster or slower using [SoX](http://sox.sourceforge.net/). For this to work, version 14.4.2 or higher needs to be installed.
+`manim-voiceover` can make the output from speech synthesizers faster or slower using [SoX](http://sox.sourceforge.net/). For this to work, version 14.4.2 or higher needs to be installed.
 
 To install SoX on Mac with Homebrew:
 
@@ -54,10 +54,10 @@ or install [from source](https://sourceforge.net/projects/sox/files/sox/).
 
 ## Basic Usage
 
-To use `manim-speech`, you simply import the `VoiceoverScene` class from the plugin
+To use `manim-voiceover`, you simply import the `VoiceoverScene` class from the plugin
 
 ```py
-from manim_speech import VoiceoverScene
+from manim_voiceover import VoiceoverScene
 ```
 
 You make sure your Scene classes inherit from `VoiceoverScene`:
@@ -68,11 +68,11 @@ class MyAwesomeScene(VoiceoverScene):
         ...
 ```
 
-`manim-speech` offers multiple text-to-speech engines, some proprietary and some free. A good one to start with is gTTS, which uses Google Translate's proprietary API. We found out that this is the best for beginners in terms of cross-platform compatibility---however it needs an internet connection.
+`manim-voiceover` offers multiple text-to-speech engines, some proprietary and some free. A good one to start with is gTTS, which uses Google Translate's proprietary API. We found out that this is the best for beginners in terms of cross-platform compatibility---however it needs an internet connection.
 
 ```py
-from manim_speech import VoiceoverScene
-from manim_speech.interfaces import GTTSSpeechSynthesizer
+from manim_voiceover import VoiceoverScene
+from manim_voiceover.interfaces import GTTSSpeechSynthesizer
 
 class MyAwesomeScene(VoiceoverScene):
     def construct(self):
@@ -95,7 +95,7 @@ with self.voiceover(text="This circle is drawn as I speak.") as tracker:
 
 Using with-blocks results in clean code, allows you to chain sentences back to back and also serve as a documentation of sorts, as the video is neatly compartmentalized according to whatever lines are spoken during the animations.
 
-See the [examples directory](./examples) for more examples. We recommend starting with the [gTTS example](https://github.com/MathBlocks/manim-speech/blob/main/examples/gtts-example.py).
+See the [examples directory](./examples) for more examples. We recommend starting with the [gTTS example](https://github.com/MathBlocks/manim-voiceover/blob/main/examples/gtts-example.py).
 
 ## Configuring Azure
 

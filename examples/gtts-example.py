@@ -1,6 +1,6 @@
 from manim import *
-from manim_speech import VoiceoverScene
-from manim_speech.interfaces.gtts import GTTSSpeechSynthesizer
+from manim_voiceover import VoiceoverScene
+from manim_voiceover.interfaces.gtts import GTTSSpeechSynthesizer
 
 
 class GTTSExample(VoiceoverScene):

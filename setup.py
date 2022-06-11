@@ -3,9 +3,9 @@
 from distutils.core import setup
 
 setup(
-    name="manim-speech",
+    name="manim-voiceover",
     version="0.0.1",
-    description="Manim plugin for speech synthesis and voiceover generation",
+    description="Manim plugin for adding voiceovers to Manim videos",
     author="prism0x",
     author_email="",
     url="",
@@ -21,5 +21,5 @@ setup(
         "mutagen",
         # "stt",
     ],
-    packages=["manim_speech"],
+    packages=["manim_voiceover"],
 )

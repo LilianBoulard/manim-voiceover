@@ -1,12 +1,12 @@
 from manim import *
 import pygments.styles as code_styles
-from manim_speech import VoiceoverScene
+from manim_voiceover import VoiceoverScene
 
-from manim_speech.interfaces.azure import AzureSpeechSynthesizer
+from manim_voiceover.interfaces.azure import AzureSpeechSynthesizer
 
-# from manim_speech.interfaces.pyttsx3 import PyTTSX3SpeechSynthesizer
-# from manim_speech.interfaces.gtts import GTTSSpeechSynthesizer
-from manim_speech.interfaces.recording_mapper import RecordingMapper
+# from manim_voiceover.interfaces.pyttsx3 import PyTTSX3SpeechSynthesizer
+# from manim_voiceover.interfaces.gtts import GTTSSpeechSynthesizer
+from manim_voiceover.interfaces.recording_mapper import RecordingMapper
 
 # import pyttsx3
 
@@ -267,7 +267,7 @@ self.play(Write(demo_code), run_time=tracker.duration)''',
 
         with self.voiceover(
             text="""Then you simply replace the AI speech synthesizer with a class called recording mapper, giving your MP3 file as input.
-            Manim-speech automatically splits your audio and replaces the AI generated voice with your real recording, wherever it is needed."""
+            Manim-voiceover automatically splits your audio and replaces the AI generated voice with your real recording, wherever it is needed."""
         ):
             self.play(FadeOut(demo_code3.code), FadeIn(demo_code4.code))
             self.play(FadeOut(demo_code4.code), FadeIn(demo_code5.code))
@@ -275,11 +275,11 @@ self.play(Write(demo_code), run_time=tracker.duration)''',
         self.wait(2)
 
         with self.voiceover(
-            text="""Manim-speech makes it much easier to do voiceovers for Manim projects."""
+            text="""Manim-voiceover makes it much easier to do voiceovers for Manim projects."""
         ):
             self.play(FadeOut(demo_code5.code, demo_code3.background_mobject))
 
         with self.voiceover(text="Visit the GitHub repo shown on your screen to start using it in your project."):
-            self.play(FadeIn(Tex(r"\texttt{https://github.com/MathBlocks/manim-speech}")))
+            self.play(FadeIn(Tex(r"\texttt{https://github.com/MathBlocks/manim-voiceover}")))
 
         self.wait(5)

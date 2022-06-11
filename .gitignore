@@ -1,5 +1,5 @@
 .vscode
-manim_speech.egg-info/
+manim_voiceover.egg-info/
 __pycache__
 .env
 .DS_Store

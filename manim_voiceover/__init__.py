@@ -4,8 +4,8 @@ import json
 # import os
 
 from manim import Scene, config
-from manim_speech.modify_audio import get_duration
-from manim_speech.speech_synthesizer import SpeechSynthesizer
+from manim_voiceover.modify_audio import get_duration
+from manim_voiceover.speech_synthesizer import SpeechSynthesizer
 from .helper import chunks
 
 SCRIPT_FILE_PATH = "media/script.txt"

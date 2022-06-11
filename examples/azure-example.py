@@ -1,6 +1,6 @@
 from manim import *
-from manim_speech import VoiceoverScene
-from manim_speech.interfaces.azure import AzureSpeechSynthesizer
+from manim_voiceover import VoiceoverScene
+from manim_voiceover.interfaces.azure import AzureSpeechSynthesizer
 
 
 class GTTSExample(VoiceoverScene):
