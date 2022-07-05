@@ -26,7 +26,7 @@ class AzureSpeechSynthesizer(SpeechSynthesizer):
     def _synthesize_text(self, text, output_dir=None, path=None):
         inner = text
         # Remove bookmarks
-        inner = re.sub("<bookmark\s*mark\s*=[\'\"]\w*[\"\']\s*/>", "", inner)
+        inner = re.sub("<bookmark\s*mark\s*=['\"]\w*[\"']\s*/>", "", inner)
         if output_dir is None:
             output_dir = self.output_dir
 
@@ -49,7 +49,7 @@ class AzureSpeechSynthesizer(SpeechSynthesizer):
             inner,
         )
 
-        data = {"ssml": ssml, "config": self.__dict__}
+        data = {"input_text": text, "ssml": ssml, "config": self.__dict__}
         data_hash = self.get_data_hash(data)
 
         # Get the file extension from output_format
@@ -94,7 +94,7 @@ class AzureSpeechSynthesizer(SpeechSynthesizer):
         def process_event(evt):
             result = {label[1:]: val for label, val in evt.__dict__.items()}
             result["boundary_type"] = result["boundary_type"].name
-            result["text_offset"] = result["text_offset"] - 222 # TODO: make more clear
+            result["text_offset"] = result["text_offset"] - 222  # TODO: make more clear
             return result
 
         speech_synthesizer.synthesis_word_boundary.connect(

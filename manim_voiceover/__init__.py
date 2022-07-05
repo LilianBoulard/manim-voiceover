@@ -24,6 +24,7 @@ class TimeInterpolator:
         for wb in word_boundaries:
             self.x.append(wb["text_offset"])
             self.y.append(wb["audio_offset"] / AUDIO_OFFSET_RESOLUTION)
+
         self.f = interp1d(self.x, self.y)
 
     def interpolate(self, distance):
