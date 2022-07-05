@@ -206,8 +206,9 @@ self.play(Write(demo_code), run_time=tracker.duration)''',
             language="python",
         ).scale(0.85)
 
-        demo_code4 = Code(
-            code="""class VoiceoverDemo(VoiceoverScene):
+        demo_code4 = (
+            Code(
+                code="""class VoiceoverDemo(VoiceoverScene):
     def construct(self):
         # self.set_speech_synthesizer(
         #     AzureSpeechSynthesizer(
@@ -220,15 +221,19 @@ self.play(Write(demo_code), run_time=tracker.duration)''',
         #     RecordingMapper("my_voice_recording.mp3")
         # )
         """,
-            insert_line_no=False,
-            style=code_style,
-            background="window",
-            font="Consolas",
-            language="python",
-        ).scale(0.85).align_to(demo_code3, LEFT)
+                insert_line_no=False,
+                style=code_style,
+                background="window",
+                font="Consolas",
+                language="python",
+            )
+            .scale(0.85)
+            .align_to(demo_code3, LEFT)
+        )
 
-        demo_code5 = Code(
-            code="""class VoiceoverDemo(VoiceoverScene):
+        demo_code5 = (
+            Code(
+                code="""class VoiceoverDemo(VoiceoverScene):
     def construct(self):
         # self.set_speech_synthesizer(
         #     AzureSpeechSynthesizer(
@@ -241,14 +246,19 @@ self.play(Write(demo_code), run_time=tracker.duration)''',
             RecordingMapper("my_voice_recording.mp3")
         )
         """,
-            insert_line_no=False,
-            style=code_style,
-            background="window",
-            font="Consolas",
-            language="python",
-        ).scale(0.85).align_to(demo_code3, LEFT)
+                insert_line_no=False,
+                style=code_style,
+                background="window",
+                font="Consolas",
+                language="python",
+            )
+            .scale(0.85)
+            .align_to(demo_code3, LEFT)
+        )
 
-        with self.voiceover(text="And that's not even the best part! You can switch the AI generated voice with an actual recording of your voice very easily."):
+        with self.voiceover(
+            text="And that's not even the best part! You can switch the AI generated voice with an actual recording of your voice very easily."
+        ):
             self.play(FadeOut(demo_code2))
             self.wait()
             text1 = Tex("AI voice")
@@ -262,7 +272,9 @@ self.play(Write(demo_code), run_time=tracker.duration)''',
             self.wait()
             self.play(FadeOut(text1, text2, arrow))
 
-        with self.voiceover(text="To do that, you record an MP3 of the final text of your video with 2 second pauses."):
+        with self.voiceover(
+            text="To do that, you record an MP3 of the final text of your video with 2 second pauses."
+        ):
             self.play(FadeIn(demo_code3))
 
         with self.voiceover(
@@ -279,7 +291,11 @@ self.play(Write(demo_code), run_time=tracker.duration)''',
         ):
             self.play(FadeOut(demo_code5.code, demo_code3.background_mobject))
 
-        with self.voiceover(text="Visit the GitHub repo shown on your screen to start using it in your project."):
-            self.play(FadeIn(Tex(r"\texttt{https://github.com/MathBlocks/manim-voiceover}")))
+        with self.voiceover(
+            text="Visit the GitHub repo shown on your screen to start using it in your project."
+        ):
+            self.play(
+                FadeIn(Tex(r"\texttt{https://github.com/MathBlocks/manim-voiceover}"))
+            )
 
         self.wait(5)
