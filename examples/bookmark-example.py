@@ -38,11 +38,11 @@ class BookmarkExample(VoiceoverScene):
             self.play(
                 Write(blist[0]), run_time=tracker.time_until_bookmark("B", limit=1)
             )
-            self.safe_wait(tracker.time_until_bookmark("B"))
+            self.wait_until_bookmark("B")
             self.play(
                 Write(blist[1]), run_time=tracker.time_until_bookmark("C", limit=1)
             )
-            self.safe_wait(tracker.time_until_bookmark("C"))
+            self.wait_until_bookmark("C")
             self.play(Write(blist[2]))
 
         self.play(FadeOut(blist))
@@ -72,7 +72,7 @@ class BookmarkExample(VoiceoverScene):
             text="Let's see it in action. The quick brown fox<bookmark mark='A'/>jumps <bookmark mark='B'/>over the lazy dog."
         ) as tracker:
             self.play(FadeIn(fox, dog))
-            self.safe_wait(tracker.time_until_bookmark("A"))
+            self.wait_until_bookmark("A")
             self.play(
                 MoveAlongPath(fox, path_arc), run_time=tracker.time_until_bookmark("B")
             )
@@ -93,7 +93,7 @@ class BookmarkExample(VoiceoverScene):
             text="But we can go even finer than that, down to the syllable level. <bookmark mark='A'/>See how we sync the animations as we recite the word that you see on your screen."
         ) as tracker:
             self.play(FadeOut(fox, dog, sentence, xml_tag_box))
-            self.safe_wait(tracker.time_until_bookmark("A"))
+            self.wait_until_bookmark("A")
             self.play(Write(s32s_text), run_time=tracker.get_remaining_duration())
 
         with self.voiceover(
@@ -134,4 +134,4 @@ class BookmarkExample(VoiceoverScene):
                 FadeIn(Tex(r"\texttt{https://github.com/MathBlocks/manim-voiceover}"))
             )
 
-        self.wait(5)
+        self.wait(3)

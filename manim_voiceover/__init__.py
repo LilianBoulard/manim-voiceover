@@ -69,7 +69,6 @@ class VoiceoverTracker:
             elapsed = self.time_interpolator.interpolate(dist)
             self.bookmark_times[mark] = self.start_t + elapsed
 
-
     def get_remaining_duration(self, buff=0):
         # result= max(self.end_t - self.scene.last_t, 0)
         result = max(self.end_t - self.scene.renderer.time + buff, 0)
@@ -185,6 +184,9 @@ class VoiceoverScene(Scene):
     def safe_wait(self, duration: float):
         if duration > 1 / config["frame_rate"]:
             self.wait(duration)
+
+    def wait_until_bookmark(self, mark):
+        self.safe_wait(self.current_tracker.time_until_bookmark(mark))
 
     @contextmanager
     def voiceover(self, text=None, ssml=None, **kwargs):
