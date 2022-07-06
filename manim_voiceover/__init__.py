@@ -1,14 +1,34 @@
 from contextlib import contextmanager
 from math import ceil
 import json
+
 # import os
+import re
 
 from manim import Scene, config
 from manim_voiceover.modify_audio import get_duration
 from manim_voiceover.speech_synthesizer import SpeechSynthesizer
 from .helper import chunks
 
+from scipy.interpolate import interp1d
+
 SCRIPT_FILE_PATH = "media/script.txt"
+
+AUDIO_OFFSET_RESOLUTION = 10_000_000
+
+
+class TimeInterpolator:
+    def __init__(self, word_boundaries):
+        self.x = []
+        self.y = []
+        for wb in word_boundaries:
+            self.x.append(wb["text_offset"])
+            self.y.append(wb["audio_offset"] / AUDIO_OFFSET_RESOLUTION)
+
+        self.f = interp1d(self.x, self.y)
+
+    def interpolate(self, distance):
+        return self.f(distance)
 
 
 class VoiceoverTracker:
@@ -24,10 +44,43 @@ class VoiceoverTracker:
         self.start_t = last_t
         self.end_t = last_t + self.duration
 
+        self._process_bookmarks()
+
+    def _process_bookmarks(self):
+        self.bookmark_times = {}
+        self.bookmark_distances = {}
+        self.time_interpolator = TimeInterpolator(self.data["word_boundaries"])
+
+        self.input_text = self.data["input_text"]
+        self.content = ""
+
+        # Mark bookmark distances
+        # parts = re.split("(<bookmark .*/>)", self.input_text)
+        parts = re.split(r"(<bookmark\s*mark\s*=[\'\"]\w*[\"\']\s*/>)", self.input_text)
+        for p in parts:
+            matched = re.match(r"<bookmark\s*mark\s*=[\'\"](.*)[\"\']\s*/>", p)
+            if matched:
+                self.bookmark_distances[matched.group(1)] = len(self.content)
+            else:
+                self.content += p
+
+        # import ipdb; ipdb.set_trace()
+        for mark, dist in self.bookmark_distances.items():
+            elapsed = self.time_interpolator.interpolate(dist)
+            self.bookmark_times[mark] = self.start_t + elapsed
+
     def get_remaining_duration(self, buff=0):
         # result= max(self.end_t - self.scene.last_t, 0)
         result = max(self.end_t - self.scene.renderer.time + buff, 0)
         # print(result)
+        return result
+
+    def time_until_bookmark(self, mark, buff=0, limit=None):
+        if not mark in self.bookmark_times:
+            raise Exception("There is no <bookmark mark='%s' />" % mark)
+        result = max(self.bookmark_times[mark] - self.scene.renderer.time + buff, 0)
+        if limit is not None:
+            result = min(limit, result)
         return result
 
 
@@ -89,7 +142,9 @@ class VoiceoverScene(Scene):
         try:
             assert len(chunks_) == n_chunk or len(chunks_) == n_chunk - 1
         except AssertionError:
-            import ipdb; ipdb.set_trace()
+            import ipdb
+
+            ipdb.set_trace()
 
         subcaptions = [" ".join(i) for i in chunks_]
         subcaption_weights = [
@@ -129,6 +184,9 @@ class VoiceoverScene(Scene):
     def safe_wait(self, duration: float):
         if duration > 1 / config["frame_rate"]:
             self.wait(duration)
+
+    def wait_until_bookmark(self, mark):
+        self.safe_wait(self.current_tracker.time_until_bookmark(mark))
 
     @contextmanager
     def voiceover(self, text=None, ssml=None, **kwargs):
