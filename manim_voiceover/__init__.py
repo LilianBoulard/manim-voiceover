@@ -99,14 +99,14 @@ class VoiceoverScene(Scene):
         open(SCRIPT_FILE_PATH, "w")
 
     def add_voiceover_text(
-        self, text: str, subcaption_buff=0.1, max_subcaption_len=70, subcaption=None
+        self, text: str, subcaption_buff=0.1, max_subcaption_len=70, subcaption=None, **kwargs,
     ):
         if not hasattr(self, "speech_synthesizer"):
             raise Exception(
                 "You need to call init_voiceover() before adding a voiceover."
             )
 
-        dict_ = self.speech_synthesizer.synthesize_from_text(text)
+        dict_ = self.speech_synthesizer.synthesize_from_text(text, **kwargs)
         tracker = VoiceoverTracker(self, dict_["json_path"])
         self.add_sound(dict_["final_audio"])
         self.current_tracker = tracker

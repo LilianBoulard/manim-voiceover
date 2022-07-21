@@ -19,11 +19,11 @@ class SpeechSynthesizer:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-    def synthesize_from_text(self, text: str, path=None):
+    def synthesize_from_text(self, text: str, path=None, **kwargs):
         # Replace newlines with lines, reduce multiple consecutive spaces to single
         text = " ".join(text.split())
 
-        dict_ = self._synthesize_text(text, output_dir=None, path=path)
+        dict_ = self._synthesize_text(text, output_dir=None, path=path, **kwargs)
         # path = dict_["original_audio"]
         # import ipdb; ipdb.set_trace()
 

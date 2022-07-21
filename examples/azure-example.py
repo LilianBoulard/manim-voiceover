@@ -24,6 +24,12 @@ class AzureExample(VoiceoverScene):
         with self.voiceover(text="Now, let's transform it into a square.") as tracker:
             self.play(Transform(circle, square), run_time=tracker.duration)
 
+        with self.voiceover(
+            text="You can also change the pitch of my voice like this.",
+            prosody={"pitch": "+40Hz"},
+        ) as tracker:
+            pass
+
         with self.voiceover(text="Thank you for watching."):
             self.play(Uncreate(circle))
 

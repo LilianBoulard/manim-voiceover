@@ -23,12 +23,28 @@ class AzureSpeechSynthesizer(SpeechSynthesizer):
         self.output_format = output_format
         SpeechSynthesizer.__init__(self, **kwargs)
 
-    def _synthesize_text(self, text, output_dir=None, path=None):
+    def _synthesize_text(self, text, output_dir=None, path=None, **kwargs):
         inner = text
         # Remove bookmarks
         inner = re.sub("<bookmark\s*mark\s*=['\"]\w*[\"']\s*/>", "", inner)
         if output_dir is None:
             output_dir = self.output_dir
+
+        if "prosody" in kwargs:
+            prosody = kwargs["prosody"]
+            if not isinstance(prosody, dict):
+                raise ValueError(
+                    "The prosody argument must be a dict that contains at least one of the following keys: 'pitch', 'contour', 'range', 'rate', 'volume'."
+                )
+
+            opening_tag = (
+                "<prosody "
+                + " ".join(
+                    ['%s="%s"' % (key, str(val)) for key, val in prosody.items()]
+                )
+                + ">"
+            )
+            inner = opening_tag + inner + "</prosody>"
 
         if self.style is not None:
             inner = r"""<mstts:express-as style="%s">
