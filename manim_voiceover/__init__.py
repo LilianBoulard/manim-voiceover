@@ -44,7 +44,8 @@ class VoiceoverTracker:
         self.start_t = last_t
         self.end_t = last_t + self.duration
 
-        self._process_bookmarks()
+        if "word_boundaries" in self.data:
+            self._process_bookmarks()
 
     def _process_bookmarks(self):
         self.bookmark_times = {}
@@ -64,7 +65,6 @@ class VoiceoverTracker:
             else:
                 self.content += p
 
-        # import ipdb; ipdb.set_trace()
         for mark, dist in self.bookmark_distances.items():
             elapsed = self.time_interpolator.interpolate(dist)
             self.bookmark_times[mark] = self.start_t + elapsed
