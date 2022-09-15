@@ -109,7 +109,7 @@ class AzureSpeechSynthesizer(SpeechSynthesizer):
         #     "Bookmark reached: {}, audio offset: {}ms, bookmark text: {}.".format(evt, evt.audio_offset, evt.text)))
 
         def process_event(evt):
-            print(f'{type(evt)=}')
+            # print(f'{type(evt)=}')
             result = {label[1:]: val for label, val in evt.__dict__.items()}
             result["boundary_type"] = result["boundary_type"].name
             result["text_offset"] = result["text_offset"] - 222  # TODO: make more clear
