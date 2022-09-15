@@ -14,7 +14,7 @@ class PyTTSX3SpeechSynthesizer(SpeechSynthesizer):
         self.engine = engine
         SpeechSynthesizer.__init__(self, **kwargs)
 
-    def _synthesize_text(self, text, output_dir=None, path=None):
+    def _synthesize_text(self, text: str, output_dir: str = None, path: str = None) -> dict:
         if output_dir is None:
             output_dir = self.output_dir
 

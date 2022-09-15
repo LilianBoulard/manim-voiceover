@@ -6,7 +6,7 @@ from .modify_audio import adjust_speed
 
 
 class SpeechSynthesizer:
-    def __init__(self, global_speed=None, output_dir=None):
+    def __init__(self, global_speed: float = None, output_dir: str = None):
         # self.tts_config = tts_config
         if output_dir is None:
             output_dir = "media/tts"
@@ -19,7 +19,7 @@ class SpeechSynthesizer:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-    def synthesize_from_text(self, text: str, path=None, **kwargs):
+    def synthesize_from_text(self, text: str, path: str = None, **kwargs) -> dict:
         # Replace newlines with lines, reduce multiple consecutive spaces to single
         text = " ".join(text.split())
 
@@ -43,12 +43,12 @@ class SpeechSynthesizer:
         open(dict_["json_path"], "w").write(json.dumps(dict_))
         return dict_
 
-    def get_data_hash(self, data):
+    def get_data_hash(self, data: dict) -> str:
         dumped_data = json.dumps(data)
         data_hash = hashlib.sha256(dumped_data.encode("utf-8")).hexdigest()
         return data_hash
 
-    def _synthesize_text(self, text, output_dir=None, path=None):
+    def _synthesize_text(self, text: str, output_dir: str = None, path: str = None) -> dict:
         raise NotImplementedError(
             "This is the base class. Please extend this and implement the required methods."
         )

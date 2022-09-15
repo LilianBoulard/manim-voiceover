@@ -2,6 +2,7 @@ import os
 import json
 import itertools
 from pydub import AudioSegment
+from typing import Tuple, Iterable
 
 # from pydub.silence import split_on_silence
 
@@ -10,14 +11,15 @@ import hashlib
 
 from ..speech_synthesizer import SpeechSynthesizer
 
+
 # Had to modify `split_on_silence` from pydub to allow for
 # keeping different durations of silence at chunk beginnings and ends
 def split_on_silence_modified(
-    audio_segment,
-    min_silence_len=1000,
-    silence_thresh=-16,
-    keep_silence=[100, 1000],
-    seek_step=10,
+    audio_segment: str,
+    min_silence_len: int = 1000,
+    silence_thresh: int = -16,
+    keep_silence: Tuple[int, int] = (100, 1000),
+    seek_step: int = 10,
     **kwargs,
 ):
     """
@@ -44,7 +46,7 @@ def split_on_silence_modified(
     """
 
     # from the itertools documentation
-    def pairwise(iterable):
+    def pairwise(iterable: Iterable) -> zip:
         "s -> (s0,s1), (s1,s2), (s2, s3), ..."
         a, b = itertools.tee(iterable)
         next(b, None)
@@ -85,10 +87,10 @@ class RecordingMapper(SpeechSynthesizer):
     def __init__(
         self,
         source_path: str,
-        min_silence_len=2000,
-        silence_thresh=-45,
-        seek_step=10,
-        keep_silence=[100, 1000],
+        min_silence_len: int = 2000,
+        silence_thresh: int = -45,
+        seek_step: int = 10,
+        keep_silence: Tuple[int, int] = (100, 1000),
         **kwargs,
     ):
         self.params = {
@@ -103,7 +105,7 @@ class RecordingMapper(SpeechSynthesizer):
         self.process_audio()
         self.current_segment_index = 0
 
-    def process_audio(self):
+    def process_audio(self) -> None:
         segment = AudioSegment.from_file(self.params["source_path"])
 
         # Check whether the audio file has already been processed
@@ -148,10 +150,10 @@ class RecordingMapper(SpeechSynthesizer):
         with open(self.get_json_path(), "w") as f:
             f.write(json.dumps(output_dict, indent=4))
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return os.path.splitext(self.params["source_path"])[0] + ".json"
 
-    def _synthesize_text(self, text, output_dir=None, path=None):
+    def _synthesize_text(self, text: str, output_dir: str = None, path: str = None) -> dict:
         config = json.load(open(self.get_json_path(), "r"))
         audio_path = config["segments"][self.current_segment_index]["path"]
         json_path = os.path.splitext(audio_path)[0] + ".json"

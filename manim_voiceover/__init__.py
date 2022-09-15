@@ -1,5 +1,7 @@
 from contextlib import contextmanager
 from math import ceil
+from typing import Optional, List, Generator
+import numpy as np
 import json
 
 # import os
@@ -18,7 +20,7 @@ AUDIO_OFFSET_RESOLUTION = 10_000_000
 
 
 class TimeInterpolator:
-    def __init__(self, word_boundaries):
+    def __init__(self, word_boundaries: List[dict]):
         self.x = []
         self.y = []
         for wb in word_boundaries:
@@ -27,12 +29,12 @@ class TimeInterpolator:
 
         self.f = interp1d(self.x, self.y)
 
-    def interpolate(self, distance):
+    def interpolate(self, distance: int) -> np.ndarray:
         return self.f(distance)
 
 
 class VoiceoverTracker:
-    def __init__(self, scene: Scene, path):
+    def __init__(self, scene: Scene, path: str):
         self.scene = scene
         self.path = path
         self.data = json.loads(open(path, "r").read())
@@ -47,7 +49,7 @@ class VoiceoverTracker:
         if "word_boundaries" in self.data:
             self._process_bookmarks()
 
-    def _process_bookmarks(self):
+    def _process_bookmarks(self) -> None:
         self.bookmark_times = {}
         self.bookmark_distances = {}
         self.time_interpolator = TimeInterpolator(self.data["word_boundaries"])
@@ -69,13 +71,13 @@ class VoiceoverTracker:
             elapsed = self.time_interpolator.interpolate(dist)
             self.bookmark_times[mark] = self.start_t + elapsed
 
-    def get_remaining_duration(self, buff=0):
+    def get_remaining_duration(self, buff: int = 0) -> int:
         # result= max(self.end_t - self.scene.last_t, 0)
         result = max(self.end_t - self.scene.renderer.time + buff, 0)
         # print(result)
         return result
 
-    def time_until_bookmark(self, mark, buff=0, limit=None):
+    def time_until_bookmark(self, mark: str, buff: int = 0, limit: Optional[int] = None) -> int:
         if not mark in self.bookmark_times:
             raise Exception("There is no <bookmark mark='%s' />" % mark)
         result = max(self.bookmark_times[mark] - self.scene.renderer.time + buff, 0)
@@ -85,12 +87,18 @@ class VoiceoverTracker:
 
 
 class VoiceoverScene(Scene):
+
+    speech_synthesizer: SpeechSynthesizer
+    current_tracker: Optional[VoiceoverTracker]
+    create_subcaption: bool
+    create_script: bool
+
     def set_speech_synthesizer(
         self,
         speech_synthesizer: SpeechSynthesizer,
         create_subcaption: bool = True,
         create_script: bool = True,
-    ):
+    ) -> None:
         self.speech_synthesizer = speech_synthesizer
         self.current_tracker = None
         self.create_subcaption = create_subcaption
@@ -99,8 +107,9 @@ class VoiceoverScene(Scene):
         open(SCRIPT_FILE_PATH, "w")
 
     def add_voiceover_text(
-        self, text: str, subcaption_buff=0.1, max_subcaption_len=70, subcaption=None, **kwargs,
-    ):
+        self, text: str, subcaption_buff: float = 0.1,
+        max_subcaption_len: int = 70, subcaption: Optional[str] = None, **kwargs,
+    ) -> VoiceoverTracker:
         if not hasattr(self, "speech_synthesizer"):
             raise Exception(
                 "You need to call init_voiceover() before adding a voiceover."
@@ -131,9 +140,9 @@ class VoiceoverScene(Scene):
         self,
         subcaption: str,
         duration: float,
-        subcaption_buff=0.1,
+        subcaption_buff: float = 0.1,
         max_subcaption_len: int = 70,
-    ):
+    ) -> None:
         subcaption = " ".join(subcaption.split())
         n_chunk = ceil(len(subcaption) / max_subcaption_len)
         tokens = subcaption.split(" ")
@@ -161,10 +170,10 @@ class VoiceoverScene(Scene):
             )
             current_offset += chunk_duration
 
-    def add_voiceover_ssml(self, ssml: str):
+    def add_voiceover_ssml(self, ssml: str, **kwargs) -> None:
         raise NotImplementedError("SSML input not implemented yet.")
 
-    def save_to_script_file(self, text: str):
+    def save_to_script_file(self, text: str) -> None:
         text = " ".join(text.split())
 
         # script_file_path = Path(config.get_dir("output_file")).with_suffix(".script.srt")
@@ -173,7 +182,7 @@ class VoiceoverScene(Scene):
             f.write(text)
             f.write("\n\n")
 
-    def wait_for_voiceover(self):
+    def wait_for_voiceover(self) -> None:
         if not hasattr(self, "current_tracker"):
             return
         if self.current_tracker is None:
@@ -181,15 +190,15 @@ class VoiceoverScene(Scene):
 
         self.safe_wait(self.current_tracker.get_remaining_duration())
 
-    def safe_wait(self, duration: float):
+    def safe_wait(self, duration: float) -> None:
         if duration > 1 / config["frame_rate"]:
             self.wait(duration)
 
-    def wait_until_bookmark(self, mark):
+    def wait_until_bookmark(self, mark: str) -> None:
         self.safe_wait(self.current_tracker.time_until_bookmark(mark))
 
     @contextmanager
-    def voiceover(self, text=None, ssml=None, **kwargs):
+    def voiceover(self, text: str = None, ssml: str = None, **kwargs) -> Generator[VoiceoverTracker, None, None]:
         if text is None and ssml is None:
             raise ValueError("Please specify either a voiceover text or SSML string.")
 

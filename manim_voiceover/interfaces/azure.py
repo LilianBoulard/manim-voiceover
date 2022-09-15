@@ -12,10 +12,10 @@ load_dotenv()
 class AzureSpeechSynthesizer(SpeechSynthesizer):
     def __init__(
         self,
-        voice="en-US-AriaNeural",
+        voice: str = "en-US-AriaNeural",
         # style="newscast-casual",
-        style=None,
-        output_format="Audio48Khz192KBitRateMonoMp3",
+        style: str = None,
+        output_format: str = "Audio48Khz192KBitRateMonoMp3",
         **kwargs,
     ):
         self.voice = voice
@@ -23,7 +23,7 @@ class AzureSpeechSynthesizer(SpeechSynthesizer):
         self.output_format = output_format
         SpeechSynthesizer.__init__(self, **kwargs)
 
-    def _synthesize_text(self, text, output_dir=None, path=None, **kwargs):
+    def _synthesize_text(self, text: str, output_dir: str = None, path: str = None, **kwargs) -> dict:
         inner = text
         # Remove bookmarks
         inner = re.sub("<bookmark\s*mark\s*=['\"]\w*[\"']\s*/>", "", inner)
@@ -107,7 +107,9 @@ class AzureSpeechSynthesizer(SpeechSynthesizer):
         word_boundaries = []
         # speech_synthesizer.bookmark_reached.connect(lambda evt: print(
         #     "Bookmark reached: {}, audio offset: {}ms, bookmark text: {}.".format(evt, evt.audio_offset, evt.text)))
+
         def process_event(evt):
+            print(f'{type(evt)=}')
             result = {label[1:]: val for label, val in evt.__dict__.items()}
             result["boundary_type"] = result["boundary_type"].name
             result["text_offset"] = result["text_offset"] - 222  # TODO: make more clear
